@@ -62,15 +62,44 @@ const Player = function() {
     const getPlayerTurn = () => playerTurn;
     
     const switchPlayerTurn = () => {
-        playerTurn === "X" ? "O" : "X";
+        playerTurn = playerTurn === "X" ? "O" : "X";
     }
     
     return {getPlayerTurn, switchPlayerTurn}
 }
 
-// const board = Board();
-// board.setMark("X", 0, 0);
-// board.setMark("X", 1, 1);
-// board.setMark("X", 2, 2);
-// console.log(board.getBoard());
-// console.log(board.checkWin());
+// Game Control Module
+const GameController = function() {
+    const player = Player();
+    const board = Board();
+
+    const _validateInput = () => {
+        let input = prompt(`Player ${player.getPlayerTurn()}: Which squre do you want to take? (input y follow by x e.g. 21)`);
+        const inputY = input[0];
+        const inputX = input[1];
+
+        if (board.checkBoxOccupied(inputY, inputX)) {
+            console.log("Already Occupied");
+            return _validateInput();
+        }
+        else {
+            board.setMark(player.getPlayerTurn(), inputY, inputX);
+            player.switchPlayerTurn();
+            console.log(board.getBoard());
+        }
+    }
+
+    let isGameOver =false;
+    while (!isGameOver) {
+        _validateInput();
+
+        let winner = board.checkWin()
+        if (winner !== null) {
+            isGameOver = true
+            console.log(`The Winner is Player ${winner}`);
+        }
+    }
+
+}
+
+const game = GameController();
