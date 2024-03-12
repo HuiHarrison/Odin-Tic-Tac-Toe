@@ -52,7 +52,13 @@ const Board = function() {
         return null;
     }
 
-    return {getBoard, setMark, checkBoxOccupied, checkWin}
+    const checkDraw = () => {
+        const flatBoard = board.flat();
+        console.log(flatBoard);
+        return (!flatBoard.includes(" "))
+    }
+
+    return {getBoard, setMark, checkBoxOccupied, checkWin, checkDraw}
 }
 
 // Player Module
@@ -73,17 +79,22 @@ const GameController = function() {
     const player = Player();
     const board = Board();
 
-    const _validateInput = () => {
+    const _getInput = () => {
         let input = prompt(`Player ${player.getPlayerTurn()}: Which squre do you want to take? (input y follow by x e.g. 21)`);
         const inputY = input[0];
         const inputX = input[1];
+        return {inputY, inputX}
+    }
 
-        if (board.checkBoxOccupied(inputY, inputX)) {
+    const validateInput = () => {
+        const coordinate = _getInput();
+
+        if (board.checkBoxOccupied(coordinate.inputY, coordinate.inputX)) {
             console.log("Already Occupied");
-            return _validateInput();
+            return validateInput();
         }
         else {
-            board.setMark(player.getPlayerTurn(), inputY, inputX);
+            board.setMark(player.getPlayerTurn(), coordinate.inputY, coordinate.inputX);
             player.switchPlayerTurn();
             console.log(board.getBoard());
         }
@@ -91,12 +102,17 @@ const GameController = function() {
 
     let isGameOver =false;
     while (!isGameOver) {
-        _validateInput();
+        board.checkDraw();
+        validateInput();
 
         let winner = board.checkWin()
         if (winner !== null) {
             isGameOver = true
             console.log(`The Winner is Player ${winner}`);
+        }
+        else if (board.checkDraw()) {
+            isGameOver = true
+            console.log(`Draw`);
         }
     }
 
