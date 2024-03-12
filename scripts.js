@@ -54,7 +54,6 @@ const Board = function() {
 
     const checkDraw = () => {
         const flatBoard = board.flat();
-        console.log(flatBoard);
         return (!flatBoard.includes(" "))
     }
 
@@ -75,14 +74,13 @@ const Player = function() {
 }
 
 // Game Control Module
-const GameController = function() {
+const GameController = function(board) {
     const player = Player();
-    const board = Board();
 
     const _getInput = () => {
-        let input = prompt(`Player ${player.getPlayerTurn()}: Which squre do you want to take? (input y follow by x e.g. 21)`);
-        const inputY = input[0];
-        const inputX = input[1];
+        let inputPrompt = prompt(`Player ${player.getPlayerTurn()}: Which squre do you want to take? (input y follow by x e.g. 21)`);
+        const inputY = inputPrompt[0];
+        const inputX = inputPrompt[1];
         return {inputY, inputX}
     }
 
@@ -100,10 +98,16 @@ const GameController = function() {
         }
     }
 
+    return {validateInput}
+}
+
+const Main = function() {
+    const board = Board();
+    const gameController = GameController(board);
+
     let isGameOver =false;
     while (!isGameOver) {
-        board.checkDraw();
-        validateInput();
+        gameController.validateInput();
 
         let winner = board.checkWin()
         if (winner !== null) {
@@ -115,7 +119,6 @@ const GameController = function() {
             console.log(`Draw`);
         }
     }
-
 }
 
-const game = GameController();
+Main();
