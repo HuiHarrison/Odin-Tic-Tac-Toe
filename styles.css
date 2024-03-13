@@ -1,0 +1,90 @@
+:root {
+    --primary-background-colour: #edf2f4;
+    --secondary-background-colour: #8d99ae;
+    --dominant-colour: #2b2d42;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    color: var(--dominant-colour);
+    font-family: "Lato", sans-serif;
+}
+
+a:link {
+    color: var(--dominant-colour);
+  }
+  
+  a:visited {
+    color: var(--dominant-colour);
+  }
+
+header {
+    height: 10%;
+    width: 100%;
+    text-align: center;
+    background-color: var(--secondary-background-colour);
+}
+
+main {
+    flex: 1;
+    background-color: var(--primary-background-colour);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+}
+
+.turn {
+    font-size: 2.5rem;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: center;
+    align-content: center;
+
+}
+
+.box {
+    width: 150px;
+    height: 150px;
+    border: 2px solid var(--dominant-colour);
+    color: var(--dominant-colour);
+    font-size: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.box:first-child,
+.box:nth-child(2),
+.box:nth-child(3) {
+    border-top: none;
+}
+
+.box:nth-child(3n+1) {
+    border-left: none;
+}
+
+.box:nth-child(3n) {
+    border-right: none;
+}
+
+.box:nth-child(7),
+.box:nth-child(8),
+.box:last-child {
+    border-bottom: none;
+}
+
+footer {
+    height: 5%;
+    width: 100%;
+    text-align: center;
+    background-color: var(--secondary-background-colour);
+    font-size: 1.3rem;
+    padding: 1rem;
+}
