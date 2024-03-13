@@ -1,5 +1,5 @@
 // Board Module
-const Board = function() {
+const Board = (function() {
     const rows = 3;
     const columns = 3;
     let board = [];
@@ -58,7 +58,7 @@ const Board = function() {
     }
 
     return {getBoard, setMark, checkBoxOccupied, checkWin, checkDraw}
-}
+})();
 
 // Player Module
 const Player = function() {
@@ -74,7 +74,7 @@ const Player = function() {
 }
 
 // Game Control Module
-const GameController = function(board) {
+const GameController = (function() {
     const player = Player();
 
     const _getInput = () => {
@@ -87,34 +87,47 @@ const GameController = function(board) {
     const validateInput = () => {
         const coordinate = _getInput();
 
-        if (board.checkBoxOccupied(coordinate.inputY, coordinate.inputX)) {
+        if (Board.checkBoxOccupied(coordinate.inputY, coordinate.inputX)) {
             console.log("Already Occupied");
             return validateInput();
         }
         else {
-            board.setMark(player.getPlayerTurn(), coordinate.inputY, coordinate.inputX);
+            Board.setMark(player.getPlayerTurn(), coordinate.inputY, coordinate.inputX);
             player.switchPlayerTurn();
-            console.log(board.getBoard());
+            console.log(Board.getBoard());
         }
     }
 
     return {validateInput}
-}
+})();
+
+// Page Module
+const Page = (function() {
+    const mainTag = document.querySelector("main");
+    const turnTextDiv = mainTag.querySelector(".turn-text");
+    const boardDiv = mainTag.querySelector(".board");
+    const boxDivs = boardDiv.querySelectorAll(".box");
+
+    const getTurnTextDiv = () => turnTextDiv;
+
+    const getBoardDiv = () => boardDiv;
+
+    const getBoxDivs = () => boxDivs;
+
+    return {getTurnTextDiv, getBoardDiv, getBoxDivs}
+})()
 
 const Main = function() {
-    const board = Board();
-    const gameController = GameController(board);
-
     let isGameOver =false;
     while (!isGameOver) {
-        gameController.validateInput();
+        GameController.validateInput();
 
-        let winner = board.checkWin()
+        let winner = Board.checkWin()
         if (winner !== null) {
             isGameOver = true
             console.log(`The Winner is Player ${winner}`);
         }
-        else if (board.checkDraw()) {
+        else if (Board.checkDraw()) {
             isGameOver = true
             console.log(`Draw`);
         }
