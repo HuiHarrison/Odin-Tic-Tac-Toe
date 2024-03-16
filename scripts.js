@@ -89,7 +89,9 @@ const GameController = (function() {
             console.log("Already Occupied");
         }
         else {
-            Board.setMark(Player.getPlayerTurn(), coordinate.posY, coordinate.posX);
+            let playerTurn = Player.getPlayerTurn();
+            Board.setMark(playerTurn, coordinate.posY, coordinate.posX);
+            Page.addElementToBox(index, playerTurn)
             Player.switchPlayerTurn();
             Page.updateTurnTextDiv();
         }
@@ -114,7 +116,22 @@ const Page = (function() {
 
     const getBoxDivs = () => boxDivs;
 
-    return {updateTurnTextDiv, getBoardDiv, getBoxDivs}
+    const addElementToBox = (index, mark) => {
+        const item = document.createElement("i");
+        item.classList.add("fa-sharp");
+        if (mark === "X") {
+            item.classList.add("fa-solid");
+            item.classList.add("fa-x");
+        }
+        else if (mark === "O") {
+            item.classList.add("fa-regular");
+            item.classList.add("fa-circle");
+        }
+        
+        boxDivs[index].appendChild(item);
+    }
+
+    return {updateTurnTextDiv, getBoardDiv, getBoxDivs, addElementToBox}
 })()
 
 const Main = function() {
@@ -125,11 +142,9 @@ const Main = function() {
 
             let winner = Board.checkWin()
             if (winner !== null) {
-                isGameOver = true
                 console.log(`The Winner is Player ${winner}`);
             }
             else if (Board.checkDraw()) {
-                isGameOver = true
                 console.log(`Draw`);
             }
         });
