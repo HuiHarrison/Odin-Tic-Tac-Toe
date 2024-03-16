@@ -61,7 +61,7 @@ const Board = (function() {
 })();
 
 // Player Module
-const Player = function() {
+const Player = (function() {
     let playerTurn = "X";
     
     const getPlayerTurn = () => playerTurn;
@@ -71,67 +71,69 @@ const Player = function() {
     }
     
     return {getPlayerTurn, switchPlayerTurn}
-}
+})();
 
 // Game Control Module
 const GameController = (function() {
-    const player = Player();
 
-    const _getInput = () => {
-        let inputPrompt = prompt(`Player ${player.getPlayerTurn()}: Which squre do you want to take? (input y follow by x e.g. 21)`);
-        const inputY = inputPrompt[0];
-        const inputX = inputPrompt[1];
-        return {inputY, inputX}
+    const indexToCoordinate = (index) => {
+        posY = Math.floor(index / 3);
+        posX = Math.floor(index % 3);
+        return {posY, posX};
     }
 
-    const validateInput = () => {
-        const coordinate = _getInput();
+    const update = (index) => {
+        const coordinate = indexToCoordinate(index);
 
-        if (Board.checkBoxOccupied(coordinate.inputY, coordinate.inputX)) {
+        if (Board.checkBoxOccupied(coordinate.posY, coordinate.posX)) {
             console.log("Already Occupied");
-            return validateInput();
         }
         else {
-            Board.setMark(player.getPlayerTurn(), coordinate.inputY, coordinate.inputX);
-            player.switchPlayerTurn();
-            console.log(Board.getBoard());
+            Board.setMark(Player.getPlayerTurn(), coordinate.posY, coordinate.posX);
+            Player.switchPlayerTurn();
+            Page.updateTurnTextDiv();
         }
     }
 
-    return {validateInput}
+    return {update}
 })();
 
 // Page Module
 const Page = (function() {
     const mainTag = document.querySelector("main");
     const turnTextDiv = mainTag.querySelector(".turn-text");
+    const playerSpan = turnTextDiv.querySelector("span");
     const boardDiv = mainTag.querySelector(".board");
     const boxDivs = boardDiv.querySelectorAll(".box");
 
-    const getTurnTextDiv = () => turnTextDiv;
+    const updateTurnTextDiv = () => {
+        playerSpan.innerText = Player.getPlayerTurn();
+    };
 
     const getBoardDiv = () => boardDiv;
 
     const getBoxDivs = () => boxDivs;
 
-    return {getTurnTextDiv, getBoardDiv, getBoxDivs}
+    return {updateTurnTextDiv, getBoardDiv, getBoxDivs}
 })()
 
 const Main = function() {
-    let isGameOver =false;
-    while (!isGameOver) {
-        GameController.validateInput();
+    for (let i = 0; i < Page.getBoxDivs().length; i++) {
+        Page.getBoxDivs()[i].addEventListener("click", function() {
+            GameController.update(i);
+            console.log(Board.getBoard());
 
-        let winner = Board.checkWin()
-        if (winner !== null) {
-            isGameOver = true
-            console.log(`The Winner is Player ${winner}`);
-        }
-        else if (Board.checkDraw()) {
-            isGameOver = true
-            console.log(`Draw`);
-        }
+            let winner = Board.checkWin()
+            if (winner !== null) {
+                isGameOver = true
+                console.log(`The Winner is Player ${winner}`);
+            }
+            else if (Board.checkDraw()) {
+                isGameOver = true
+                console.log(`Draw`);
+            }
+        });
     }
 }
 
-// Main();
+Main();
