@@ -12,6 +12,14 @@ const Board = (function() {
         }
     }
 
+    const resetBoard = () => {
+        for (let y=0; y < columns; y++) {
+            for (let x=0; x < rows; x++) {
+                board[y][x] = " ";
+            }
+    }
+}
+
     const getBoard = () => board;
 
     const checkBoxOccupied = (posY, posX) => {
@@ -22,7 +30,7 @@ const Board = (function() {
         board[posY][posX] = mark;
     }
 
-    const checkDraw = () => {
+    const _checkDraw = () => {
         const flatBoard = board.flat();
         return (!flatBoard.includes(" "))
     }
@@ -55,14 +63,14 @@ const Board = (function() {
         }
 
         // Check Draw
-        if (checkDraw()) {
+        if (_checkDraw()) {
             return "draw"
         }
 
         return null;
     }
 
-    return {getBoard, setMark, checkBoxOccupied, checkWin,}
+    return {getBoard, setMark, checkBoxOccupied, checkWin, resetBoard}
 })();
 
 // Player Module
@@ -81,14 +89,14 @@ const Player = (function() {
 // Game Control Module
 const GameController = (function() {
 
-    const indexToCoordinate = (index) => {
+    const _indexToCoordinate = (index) => {
         posY = Math.floor(index / 3);
         posX = Math.floor(index % 3);
         return {posY, posX};
     }
 
     const update = (index) => {
-        const coordinate = indexToCoordinate(index);
+        const coordinate = _indexToCoordinate(index);
 
         if (Board.checkBoxOccupied(coordinate.posY, coordinate.posX)) {
             console.log("Already Occupied");
@@ -114,6 +122,7 @@ const Page = (function() {
     const boxDivs = boardDiv.querySelectorAll(".box");
     const gameEndDialog = document.querySelector("#game-end");
     const gameEndText = gameEndDialog.querySelector("#game-end-text");
+    const restartBtn = gameEndDialog.querySelector("#restart-btn");
 
     const updateGameEndText = (mark) => {
         if (mark === "draw") {
@@ -150,6 +159,15 @@ const Page = (function() {
         
         boxDivs[index].appendChild(item);
     }
+
+    const _restart = () => {
+        Board.resetBoard();
+        for (box of boxDivs) {
+            box.innerText = "";
+        }
+        gameEndDialog.close();
+    }
+    restartBtn.addEventListener("click", _restart);
 
     return {updateTurnTextDiv, getBoardDiv, getBoxDivs, addElementToBox, updateGameEndText, displayGameEndDialog}
 })()
