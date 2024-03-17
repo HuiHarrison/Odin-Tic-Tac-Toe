@@ -117,7 +117,6 @@ const Player = (function() {
 
 // Game Control Module
 const GameController = (function() {
-
     function _indexToCoordinate(index) {
         posY = Math.floor(index / 3);
         posX = Math.floor(index % 3);
@@ -154,6 +153,21 @@ const Page = (function() {
     const player2Input = nameForm.querySelector("#player2");
     const startBtn = nameForm.querySelector("#start-btn");
 
+    function _addEventListenerToBox() {
+        for (let i = 0; i < Page.getBoxDivs().length; i++) {
+            Page.getBoxDivs()[i].addEventListener("click", function() {
+                GameController.update(i);
+    
+                // Check Win/Draw
+                let winner = Board.checkWin()
+                if (winner !== null) {
+                    Page.updateGameEndText(winner);
+                    Page.displayGameEndDialog();
+                }
+            });
+        }
+    }
+
     function startGame(event) {
         event.preventDefault();
         nameForm.style.display = "none";
@@ -172,6 +186,7 @@ const Page = (function() {
         Player.addPlayerToList(player2);
         Page.updateTurnTextDiv();
 
+        _addEventListenerToBox();
     };
     startBtn.addEventListener("click", startGame);
 
@@ -232,20 +247,3 @@ const Page = (function() {
 
     return {updateTurnTextDiv, getBoardDiv, getBoxDivs, addElementToBox, updateGameEndText, displayGameEndDialog}
 })()
-
-const Main = function() {
-    for (let i = 0; i < Page.getBoxDivs().length; i++) {
-        Page.getBoxDivs()[i].addEventListener("click", function() {
-            GameController.update(i);
-
-            // Check Win/Draw
-            let winner = Board.checkWin()
-            if (winner !== null) {
-                Page.updateGameEndText(winner);
-                Page.displayGameEndDialog();
-            }
-        });
-    }
-}
-
-Main();

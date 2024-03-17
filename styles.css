@@ -129,7 +129,7 @@ footer {
     border: none;
     color: var(--dominant-colour);
     background-color: var(--primary-background-colour);
-    margin: 30% auto;
+    margin: 10% auto;
     width: 80%;
     max-width: 350px;
     padding: 2rem;
