@@ -34,10 +34,43 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3rem;
+    gap: 5rem;
+    padding: 5rem;
+}
+
+form {
+    display: flex;
+    gap: 1rem;
+    color: var(--dominant-colour);
+}
+
+form > div {
+    display: grid;
+}
+
+form input {
+    font-size: 1.3rem;
+    color: var(--dominant-colour);
+    border-radius: 10px;
+    border: 1px solid var(--dominant-colour);
+    padding: 5px;
+}
+
+form button[type="submit"] {
+    padding: 1rem 3rem;
+    background-color: var(--dominant-colour);
+    color: var(--primary-background-colour);
+    border-radius: 12px;
+    border: none;
+    font-size: 1.7rem;
+}
+
+form button[type="submit"]:hover {
+    filter: brightness(1.3);
 }
 
 .turn-text {
+    display: none;
     font-size: 2.5rem;
 }
 
@@ -115,15 +148,15 @@ footer {
 
 #game-end button {
     font-size: 2rem;
-    color: var(--dominant-colour);
-    background-color: var(--secondary-background-colour);
+    color: var(--primary-background-colour);
+    background-color: var(--dominant-colour);
     border: none;
     border-radius: 10px;
     padding: 1rem 2rem;
   }
 
   #game-end button:hover {
-    background-color: #939dae;
+    filter: brightness(1.3);
   }
 
 #game-end::backdrop {
