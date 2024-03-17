@@ -12,7 +12,7 @@ const Board = (function() {
         }
     }
 
-    const resetBoard = () => {
+    function resetBoard() {
         for (let y=0; y < columns; y++) {
             for (let x=0; x < rows; x++) {
                 board[y][x] = " ";
@@ -20,22 +20,24 @@ const Board = (function() {
     }
 }
 
-    const getBoard = () => board;
+    function getBoard() {
+        return board;
+    } 
 
-    const checkBoxOccupied = (posY, posX) => {
-        return board[posY][posX] !== " "
+    function checkBoxOccupied(posY, posX) {
+        return board[posY][posX] !== " ";
     }
 
-    const setMark = (mark, posY, posX) => {
+    function setMark(mark, posY, posX) {
         board[posY][posX] = mark;
     }
 
-    const _checkDraw = () => {
+    function _checkDraw() {
         const flatBoard = board.flat();
         return (!flatBoard.includes(" "))
     }
 
-    const checkWin = () => {
+    function checkWin() {
         const board = getBoard();
 
         // horizontal
@@ -75,33 +77,57 @@ const Board = (function() {
 
 // Player Module
 const Player = (function() {
+    let playerList =[];
+
+    function addPlayerToList(player) {
+        playerList.push(player);
+    }
+
+    function getPlayerList(){
+        return playerList;
+    }
+
+    function createPlayer(name, mark) {
+        return {
+            name,
+            mark
+        }
+    }
+
     let playerTurn = "X";
     
-    const getPlayerTurn = () => playerTurn;
-    
-    const switchPlayerTurn = () => {
-        playerTurn = playerTurn === "X" ? "O" : "X";
+    function getPlayerTurn() {
+        return playerTurn;
     }
     
-    return {getPlayerTurn, switchPlayerTurn}
+    function switchPlayerTurn() {
+        playerTurn = playerTurn === "X" ? "O" : "X";
+    }
+
+    function getPlayerTurnName() {
+        for (let i=0; i<playerList.length; i++) {
+            if (playerList[i].mark === playerTurn) {
+                return playerList[i].name;
+            }
+        }
+    }
+    
+    return {getPlayerTurn, switchPlayerTurn, createPlayer, addPlayerToList, getPlayerList, getPlayerTurnName}
 })();
 
 // Game Control Module
 const GameController = (function() {
 
-    const _indexToCoordinate = (index) => {
+    function _indexToCoordinate(index) {
         posY = Math.floor(index / 3);
         posX = Math.floor(index % 3);
         return {posY, posX};
     }
 
-    const update = (index) => {
+    function update(index) {
         const coordinate = _indexToCoordinate(index);
 
-        if (Board.checkBoxOccupied(coordinate.posY, coordinate.posX)) {
-            console.log("Already Occupied");
-        }
-        else {
+        if (!Board.checkBoxOccupied(coordinate.posY, coordinate.posX)) {
             let playerTurn = Player.getPlayerTurn();
             Board.setMark(playerTurn, coordinate.posY, coordinate.posX);
             Page.addElementToBox(index, playerTurn)
@@ -123,29 +149,64 @@ const Page = (function() {
     const gameEndDialog = document.querySelector("#game-end");
     const gameEndText = gameEndDialog.querySelector("#game-end-text");
     const restartBtn = gameEndDialog.querySelector("#restart-btn");
+    const nameForm = mainTag.querySelector("#name-form");
+    const player1Input = nameForm.querySelector("#player1");
+    const player2Input = nameForm.querySelector("#player2");
+    const startBtn = nameForm.querySelector("#start-btn");
 
-    const updateGameEndText = (mark) => {
+    function startGame(event) {
+        event.preventDefault();
+        nameForm.style.display = "none";
+        turnTextDiv.style.display = "block";
+        
+        if (player1Input.value.length === 0) {
+            player1Input.value = "Guest 1"
+        }
+        const player1 = Player.createPlayer(player1Input.value, "X");
+        Player.addPlayerToList(player1);
+
+        if (player2Input.value.length === 0) {
+            player2Input.value = "Guest 2"
+        }
+        const player2 = Player.createPlayer(player2Input.value, "O");
+        Player.addPlayerToList(player2);
+        Page.updateTurnTextDiv();
+
+    };
+    startBtn.addEventListener("click", startGame);
+
+    function updateGameEndText(mark) {
         if (mark === "draw") {
             gameEndText.innerText = "Draw!";
         }
         else {
-            gameEndText.innerText = `Player ${mark} Won!`;
+            let playerList = Player.getPlayerList();
+            for (let i=0; i<playerList.length; i++) {
+                if (playerList[i].mark === mark) {
+                    return gameEndText.innerText = `${playerList[i].name} Won!`;
+                }
+            }
         }
     };
 
-    const displayGameEndDialog = () => {
+    function displayGameEndDialog(){
         gameEndDialog.showModal();
     }
 
-    const updateTurnTextDiv = () => {
-        playerSpan.innerText = Player.getPlayerTurn();
+    function updateTurnTextDiv(){
+        playerSpan.innerText = Player.getPlayerTurnName();
     };
 
-    const getBoardDiv = () => boardDiv;
+    function getBoardDiv() {
+        return boardDiv;
+    }
+    
 
-    const getBoxDivs = () => boxDivs;
+    function getBoxDivs() {
+        return boxDivs;
+    }
 
-    const addElementToBox = (index, mark) => {
+    function addElementToBox(index, mark) {
         const item = document.createElement("i");
         item.classList.add("fa-sharp");
         if (mark === "X") {
@@ -160,7 +221,7 @@ const Page = (function() {
         boxDivs[index].appendChild(item);
     }
 
-    const _restart = () => {
+    function _restart() {
         Board.resetBoard();
         for (box of boxDivs) {
             box.innerText = "";
@@ -176,13 +237,12 @@ const Main = function() {
     for (let i = 0; i < Page.getBoxDivs().length; i++) {
         Page.getBoxDivs()[i].addEventListener("click", function() {
             GameController.update(i);
-            console.log(Board.getBoard());
 
+            // Check Win/Draw
             let winner = Board.checkWin()
             if (winner !== null) {
                 Page.updateGameEndText(winner);
                 Page.displayGameEndDialog();
-
             }
         });
     }
