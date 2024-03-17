@@ -4,10 +4,10 @@ const Board = (function() {
     const columns = 3;
     let board = [];
 
-    // Create " " rows * colums
-    for (let y=0; y < rows; y++) {
+    // Create " " colums * rows in board[]
+    for (let y=0; y < columns; y++) {
         board[y] = [];
-        for (let x=0; x < columns; x++) {
+        for (let x=0; x < rows; x++) {
             board[y][x] = " ";
         }
     }
@@ -20,6 +20,11 @@ const Board = (function() {
 
     const setMark = (mark, posY, posX) => {
         board[posY][posX] = mark;
+    }
+
+    const checkDraw = () => {
+        const flatBoard = board.flat();
+        return (!flatBoard.includes(" "))
     }
 
     const checkWin = () => {
@@ -46,18 +51,18 @@ const Board = (function() {
 
         // diagonal top right to bottom left
         if ((board[0][2] !== " ") && (board[0][2] === board[1][1]) && (board[1][1] === board[2][0])) {
-            return board[0][0];
+            return board[0][2];
+        }
+
+        // Check Draw
+        if (checkDraw()) {
+            return "draw"
         }
 
         return null;
     }
 
-    const checkDraw = () => {
-        const flatBoard = board.flat();
-        return (!flatBoard.includes(" "))
-    }
-
-    return {getBoard, setMark, checkBoxOccupied, checkWin, checkDraw}
+    return {getBoard, setMark, checkBoxOccupied, checkWin,}
 })();
 
 // Player Module
@@ -107,6 +112,21 @@ const Page = (function() {
     const playerSpan = turnTextDiv.querySelector("span");
     const boardDiv = mainTag.querySelector(".board");
     const boxDivs = boardDiv.querySelectorAll(".box");
+    const gameEndDialog = document.querySelector("#game-end");
+    const gameEndText = gameEndDialog.querySelector("#game-end-text");
+
+    const updateGameEndText = (mark) => {
+        if (mark === "draw") {
+            gameEndText.innerText = "Draw!";
+        }
+        else {
+            gameEndText.innerText = `Player ${mark} Won!`;
+        }
+    };
+
+    const displayGameEndDialog = () => {
+        gameEndDialog.showModal();
+    }
 
     const updateTurnTextDiv = () => {
         playerSpan.innerText = Player.getPlayerTurn();
@@ -131,7 +151,7 @@ const Page = (function() {
         boxDivs[index].appendChild(item);
     }
 
-    return {updateTurnTextDiv, getBoardDiv, getBoxDivs, addElementToBox}
+    return {updateTurnTextDiv, getBoardDiv, getBoxDivs, addElementToBox, updateGameEndText, displayGameEndDialog}
 })()
 
 const Main = function() {
@@ -142,10 +162,9 @@ const Main = function() {
 
             let winner = Board.checkWin()
             if (winner !== null) {
-                console.log(`The Winner is Player ${winner}`);
-            }
-            else if (Board.checkDraw()) {
-                console.log(`Draw`);
+                Page.updateGameEndText(winner);
+                Page.displayGameEndDialog();
+
             }
         });
     }

@@ -91,3 +91,41 @@ footer {
     justify-content: center;
     align-items: center;
 }
+
+#game-end {
+    border: none;
+    color: var(--dominant-colour);
+    background-color: var(--primary-background-colour);
+    margin: 30% auto;
+    width: 80%;
+    max-width: 350px;
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+#game-end > div {
+    display: grid;
+    justify-items: center;
+}
+
+#game-end p {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+#game-end button {
+    font-size: 2rem;
+    color: var(--dominant-colour);
+    background-color: var(--secondary-background-colour);
+    border: none;
+    border-radius: 10px;
+    padding: 1rem 2rem;
+  }
+
+  #game-end button:hover {
+    background-color: #939dae;
+  }
+
+#game-end::backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
+}
